@@ -1,18 +1,28 @@
 import sqlite3
 
-connection = sqlite3.connect("taskflow.db")
 
-connection.execute("""
-    CREATE TABLE IF NOT EXISTS tasks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        description TEXT,
-        status TEXT NOT NULL DEFAULT 'pending',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+def create_task(title, description):
+    connection = sqlite3.connect("taskflow.db")
+
+    connection.execute(
+        """
+        INSERT INTO tasks (title, description)
+        VALUES (?, ?)
+        """,
+        (title, description),
     )
-""")
 
-connection.commit()
+    connection.commit()
+    connection.close()
 
 
-print("Database and task table created successfully.")
+def get_tasks():
+    connection = sqlite3.connect("taskflow.db")
+
+    cursor = connection.execute("SELECT * FROM tasks")
+
+    tasks = cursor.fetchall()
+
+    connection.close()
+
+    return tasks
